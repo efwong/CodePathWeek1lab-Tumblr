@@ -11,6 +11,8 @@ import Foundation
 class TumblrApiService{
     static let service = TumblrApiService()
     
+    private var updateJsonLock:Bool = false // indicate wheter or not request is already in progress
+    
     let apiKey:String = "Q6vHoaVm5L1u2ZAW1fqv3Jw48gFzYVg9P0vH0VHl3GVy6quoGV"
     var postData:NSArray? = nil
     
@@ -19,25 +21,29 @@ class TumblrApiService{
     }
     
     func updateJsonData(completion: @escaping () -> Void){
-        let url:URL? = URL(string:"https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=\(apiKey)")
-        
-        let request = URLRequest(url: url!)
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: OperationQueue.main)
-        
-        let task: URLSessionDataTask = session.dataTask(with: request){
-            (dataOrNil, response, error) in
-            if let data = dataOrNil{
-                if let responseDictionary = try! JSONSerialization.jsonObject(with: data, options:[]) as? NSDictionary {
-                    NSLog("response: \(responseDictionary)")
-                    let responseData = responseDictionary["response"] as? NSDictionary
-                    self.postData = responseData?["posts"] as? NSArray
-                    completion()
+        if(!self.updateJsonLock){
+            self.updateJsonLock = true
+            let url:URL? = URL(string:"https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=\(apiKey)")
+            
+            let request = URLRequest(url: url!)
+            let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: OperationQueue.main)
+            
+            let task: URLSessionDataTask = session.dataTask(with: request){
+                (dataOrNil, response, error) in
+                if let data = dataOrNil{
+                    if let responseDictionary = try! JSONSerialization.jsonObject(with: data, options:[]) as? NSDictionary {
+                        NSLog("response: \(responseDictionary)")
+                        let responseData = responseDictionary["response"] as? NSDictionary
+                        self.postData = responseData?["posts"] as? NSArray
+                        completion()
+                        self.updateJsonLock = false
+                    }
                 }
+                
             }
             
+            task.resume()
         }
-        
-        task.resume()
     }
     
     func getPostData() -> NSArray?{
