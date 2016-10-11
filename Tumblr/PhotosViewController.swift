@@ -16,12 +16,18 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        TumblrApiService.service.updateJsonData(completion:self.photoTableView.reloadData);
+        TumblrApiService.service.updateJsonData(completion:self.photoTableView.reloadData)
         photoTableView.dataSource = self
         photoTableView.delegate = self
-        photoTableView.rowHeight = 500;
+        photoTableView.rowHeight = 300;
         //photoTableView.estimatedRowHeight = 500
         //photoTableView.rowHeight = UITableViewAutomaticDimension
+        
+        // Initialize UIRefreshControl
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshControlAction), for: UIControlEvents.valueChanged)
+        
+        photoTableView.insertSubview(refreshControl, at: 0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -32,45 +38,50 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "com.codepath.DemoPrototypeCell", for: indexPath) as! PhotoTableViewCell
         
+        // get photo URL
         let photoUrl:URL? = TumblrApiService.service.getPhotoPostUrl(id: indexPath.row)
+        
+        // update photo image with URL
         if photoUrl != nil {
             cell.photoImageView.setImageWith(photoUrl!)
+            cell.photoUrl = photoUrl
         }
-        //let post = TumblrApiService.service.getPostData()
-        //if post != nil && (post?.count)! > 0{
-            //let firstPost:NSDictionary = post?[0] as! NSDictionary;
-            
-            //let firstPhoto = (firstPost["photos"] as! NSArray)[0] as! NSDictionary
-            //let altPhoto = firstPhoto["alt_sizes"] as! NSArray
-            
-            
-            //let origPhoto = firstPhoto["original_size"] as! NSDictionary
-            //let origPhotoUrl = origPhoto["url"] as! String
-            //cell.photoImageView.setImageWith(URL(string: origPhotoUrl)!)
-            
-//            let firstAltphoto = altPhoto[1] as! NSDictionary
-//            let altPhotoUrl = firstAltphoto["url"] as! String
-//            cell.photoImageView.setImageWith(URL(string: altPhotoUrl)!)
-           // print(1)
-       // }
-        //let firstPost:NSDictionary = post?[0] as! NSDictionary;
-        //let photosFirst = postFirst["photos"] as NSDictionary
-        //let altSizesPhotos = photosFirst[0]
-        //let photos = post["photos"] as NSArray?
-        
-//        let cityState = data[indexPath.row].componentsSeparatedByString(", ")
-//        cell.cityLabel.text = cityState.first
-//        cell.stateLabel.text = cityState.last
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // set number of rows = number of Tumblr Posts received
         let posts = TumblrApiService.service.getPostData()
         let count = (posts != nil) ? posts!.count : 0
         return count
-        //return 1
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toPhotoDetails"{
+            // for segues to photo details
+            if let photoDetailsViewController = segue.destination as? PhotoDetailsViewController,
+                let photoTableCell = sender as? PhotoTableViewCell
+                {
+                photoDetailsViewController.photoUrl = photoTableCell.photoUrl
+                    
+            }
+            
+        }
+    }
+    
+    // on pull down to refresh, trigger this action to reload data
+    func refreshControlAction(refreshControl: UIRefreshControl){
+        TumblrApiService.service.updateJsonData(completion:reloadTableAndRefreshControl(refreshControl: refreshControl))
+
+    }
+    
+    // returns function to be passed to updateJsonData in the TumblrApiService
+    private func reloadTableAndRefreshControl(refreshControl: UIRefreshControl) -> ()->Void{
+        return { ()
+        self.photoTableView.reloadData()
+        refreshControl.endRefreshing()
+        }
+    }
 
 }
 

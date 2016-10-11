@@ -13,6 +13,8 @@ class PhotoTableViewCell: UITableViewCell {
 
     
     @IBOutlet weak var photoImageView: UIImageView!
+    
+    public var photoUrl:URL? = nil
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

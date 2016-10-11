@@ -49,17 +49,17 @@ class TumblrApiService{
         if post != nil && (post?.count)! > 0{
             let firstPost:NSDictionary = post?[id] as! NSDictionary;
             //alt
-//            let chosenPhoto = (firstPost["photos"] as! NSArray)[id] as! NSDictionary
-//            let altPhoto = chosenPhoto["alt_sizes"] as! NSArray
-//            let firstAltphoto = altPhoto[2] as! NSDictionary
-//            let altPhotoUrl = firstAltphoto["url"] as! String
-//            return URL(string: altPhotoUrl)
+            let chosenPhoto = (firstPost["photos"] as! NSArray)[0] as! NSDictionary
+            let altPhoto = chosenPhoto["alt_sizes"] as! NSArray
+            let firstAltphoto = altPhoto[2] as! NSDictionary
+            let altPhotoUrl = firstAltphoto["url"] as! String
+            return URL(string: altPhotoUrl)
             
             // orig
-            let firstPhoto = (firstPost["photos"] as! NSArray)[0] as! NSDictionary
-            let origPhoto = firstPhoto["original_size"] as! NSDictionary
-            let origPhotoUrl = origPhoto["url"] as! String
-            return URL(string: origPhotoUrl)!
+            //let firstPhoto = (firstPost["photos"] as! NSArray)[0] as! NSDictionary
+            //let origPhoto = firstPhoto["original_size"] as! NSDictionary
+            //let origPhotoUrl = origPhoto["url"] as! String
+            //return URL(string: origPhotoUrl)!
             //cell.photoImageView.setImageWith(URL(string: origPhotoUrl)!)
             
             //            let firstAltphoto = altPhoto[1] as! NSDictionary
