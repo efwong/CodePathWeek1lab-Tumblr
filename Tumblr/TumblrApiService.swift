@@ -46,33 +46,94 @@ class TumblrApiService{
         }
     }
     
-    func getPostData() -> NSArray?{
-        return self.postData;
+    func getRawPostData() -> NSArray?{
+        return self.postData
     }
     
-    func getPhotoPostUrl(id: Int) ->URL?{
+    func getCountOfPosts() -> Int{
+        if let post =  self.postData{
+            return post.count
+        }
+        return 0
+    }
+    
+    func getPosts() -> [Post]{
+        let postArr = self.postData
+        if postArr != nil{
+            var newPostArr: [Post]=[]
+            for (index, _) in postArr!.enumerated(){
+                if let newPost = getPostById(id: index){
+                    newPostArr.append(newPost)
+                }
+            }
+            return newPostArr
+        }
+        return []
+    }
+    
+//    func getPhotoPostUrl(id: Int) ->URL?{
+//        let post = self.postData
+//        if post != nil && (post?.count)! > 0{
+//            if let firstPost:NSDictionary = post?[id] as? NSDictionary{
+//            //alt
+//                if let photos = firstPost["photos"] as? NSArray{
+//                    if let chosenPhoto = photos[0] as? NSDictionary{
+//                        if let altPhoto = chosenPhoto["alt_sizes"] as? NSArray{
+//                            if let firstAltphoto = altPhoto[2] as? NSDictionary{
+//                                if let altPhotoUrl = firstAltphoto["url"] as? String{
+//                                    return URL(string: altPhotoUrl)
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return nil
+//    }
+
+    // Get Post by Id by querying self.postData
+    func getPostById(id: Int) -> Post?{
         let post = self.postData
         if post != nil && (post?.count)! > 0{
-            let firstPost:NSDictionary = post?[id] as! NSDictionary;
-            //alt
-            let chosenPhoto = (firstPost["photos"] as! NSArray)[0] as! NSDictionary
-            let altPhoto = chosenPhoto["alt_sizes"] as! NSArray
-            let firstAltphoto = altPhoto[2] as! NSDictionary
-            let altPhotoUrl = firstAltphoto["url"] as! String
-            return URL(string: altPhotoUrl)
             
-            // orig
-            //let firstPhoto = (firstPost["photos"] as! NSArray)[0] as! NSDictionary
-            //let origPhoto = firstPhoto["original_size"] as! NSDictionary
-            //let origPhotoUrl = origPhoto["url"] as! String
-            //return URL(string: origPhotoUrl)!
-            //cell.photoImageView.setImageWith(URL(string: origPhotoUrl)!)
-            
-            //            let firstAltphoto = altPhoto[1] as! NSDictionary
-            //            let altPhotoUrl = firstAltphoto["url"] as! String
-            //            cell.photoImageView.setImageWith(URL(string: altPhotoUrl)!)
-            // print(1)
+            let newPost = Post()
+            if let firstPost:NSDictionary = post?[id] as? NSDictionary{
+                if let blogName = firstPost["blog_name"] as? String{
+                    newPost.name = blogName
+                }
+                if let postId = firstPost["id"] as? Double{
+                    newPost.id = postId
+                }
+                if let summary = firstPost["summary"] as? String{
+                    newPost.summary = summary
+                }
+                if let displayAvatar = firstPost["display_avatar"] as? Bool{
+                    newPost.displayAvatar = displayAvatar
+                }
+                if let dateString = firstPost["date"] as? String{
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss zzz"
+                    newPost.date = dateFormatter.date(from: dateString)
+                }
+                //alt
+                if let photos = firstPost["photos"] as? NSArray{
+                    if let chosenPhoto = photos[0] as? NSDictionary{
+                        if let altPhoto = chosenPhoto["alt_sizes"] as? NSArray{
+                            if let firstAltphoto = altPhoto[2] as? NSDictionary{
+                                if let altPhotoUrl = firstAltphoto["url"] as? String{
+                                    newPost.imageUrl = URL(string: altPhotoUrl)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if newPost.id != 0{
+                return newPost
+            }
         }
         return nil
+        
     }
 }

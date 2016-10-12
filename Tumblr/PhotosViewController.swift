@@ -53,9 +53,9 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "com.codepath.DemoPrototypeCell", for: indexPath) as! PhotoTableViewCell
         
-        if(indexPath.row == currentRowCount-1){
-            let posts = TumblrApiService.service.getPostData()
-            let count = (posts != nil) ? posts!.count : 0
+        if(indexPath.section == currentRowCount-1){
+            let count = TumblrApiService.service.getCountOfPosts()
+            
             // if at max, don't load anymore
             if currentRowCount == count{
                 loadingView?.stopAnimating()
@@ -66,24 +66,67 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
         // get photo URL
-        let photoUrl:URL? = TumblrApiService.service.getPhotoPostUrl(id: indexPath.row)
         
         // update photo image with URL
-        if photoUrl != nil {
-            cell.photoImageView.setImageWith(photoUrl!)
-            cell.photoUrl = photoUrl
+        if let post = TumblrApiService.service.getPostById(id: indexPath.section) {
+            cell.photoImageView.setImageWith(post.imageUrl!)
+            cell.photoUrl = post.imageUrl
         }
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // set number of rows = number of Tumblr Posts received
-        let posts = TumblrApiService.service.getPostData()
-        let count = (posts != nil) ? posts!.count : 0
-        return (count <= currentRowCount) ? count : currentRowCount// load currentRowCount at most, rest will be represented by infinite scroll
+        //let count = TumblrApiService.service.getCountOfPosts()
+        //return (count <= currentRowCount) ? count : currentRowCount// load currentRowCount at most, rest will be represented by infinite scroll
+        return 1
     }
 
+    func numberOfSections(in tableView: UITableView) -> Int {
+        let count = TumblrApiService.service.getCountOfPosts()
+        return (count <= currentRowCount) ? count : currentRowCount// load currentRowCount at most, rest will be represented by infinite scroll
+    }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if let post = TumblrApiService.service.getPostById(id: section){
+            if post.displayAvatar && post.date != nil{
+                let headerView = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
+                headerView.backgroundColor = UIColor(white: 1, alpha: 0.9)
+                
+                let profileView = UIImageView(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
+                profileView.clipsToBounds = true
+                profileView.layer.cornerRadius = 15;
+                profileView.layer.borderColor = UIColor(white: 0.7, alpha: 0.8).cgColor
+                profileView.layer.borderWidth = 1;
+                
+                // set the avatar
+                profileView.setImageWith(URL(string:"https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/avatar")!)
+                headerView.addSubview(profileView)
+                
+                // add blog label
+                let blogLabel = UILabel(frame: CGRect(x: 50, y: 10, width: 150,height: 30))
+                blogLabel.text = post.name
+                headerView.addSubview(blogLabel)
+                
+                // Add a UILabel for the date here
+                // Use the section number to get the right URL
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "MMM-dd-yyyy"
+                let dateString = dateFormatter.string(from: post.date!)
+                
+                let dateLabel = UILabel(frame: CGRect(x: 200, y: 10, width: 200, height:30))
+                dateLabel.text = dateString
+                headerView.addSubview(dateLabel)
+                
+                return headerView
+            }
+        }
+        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
+    }
     
     // take care of segues to other views
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -116,8 +159,7 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
     // increment row count until max count reached
     // used for infinite scroll
     private func incrementNumberOfRows(){
-        let posts = TumblrApiService.service.getPostData()
-        let count = (posts != nil) ? posts!.count : 0
+        let count = TumblrApiService.service.getCountOfPosts()
         
         let prevCurrentRowCount = self.currentRowCount
         // only increment until count

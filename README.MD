@@ -8,7 +8,7 @@ Completed:
 [+] Milestone 4: Build Details Screen: PhotoDetailsView consists of a single UIImageView
 [+] Milestone 5: Add Pull to Refresh
 
-[-] Bonus 1
+[+] Bonus 1: Added Avatar header
 [+] Bonus 2: Infinite Scroll:
 	implementation: I reused the posts pulled from the default tumblr query
 			except, I added infinite scroll where it will only
