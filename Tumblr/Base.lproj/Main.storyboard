@@ -26,9 +26,10 @@
                                             <frame key="frameInset" width="381" height="286.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="zCR-Zs-c3U">
+                                                <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="zCR-Zs-c3U">
                                                     <frame key="frameInset" minX="8" minY="8" width="400" height="267"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <gestureRecognizers/>
                                                 </imageView>
                                             </subviews>
                                         </tableViewCellContentView>
@@ -59,9 +60,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="bd4-AH-YX2">
+                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="bd4-AH-YX2">
                                 <frame key="frameInset" minX="8" minY="100" width="400" height="267"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <gestureRecognizers/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -69,11 +71,50 @@
                     <navigationItem key="navigationItem" id="PZa-xO-isx"/>
                     <connections>
                         <outlet property="photoView" destination="bd4-AH-YX2" id="E66-Rg-fhz"/>
+                        <segue destination="2Ug-CU-Olp" kind="modal" identifier="photoDetailsToFullScreen" id="NDZ-Ia-A8P"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JuJ-vS-5Cd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1176" y="153"/>
+        </scene>
+        <!--Full Screen Photo View Controller-->
+        <scene sceneID="j1A-lz-E5e">
+            <objects>
+                <viewController id="2Ug-CU-Olp" customClass="FullScreenPhotoViewController" customModule="Tumblr" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="74f-1x-rXp">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" maximumZoomScale="3" id="iMx-Om-0LP">
+                                <frame key="frameInset" minX="20" minY="20" width="374" height="600"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="0xu-1d-f73">
+                                        <rect key="frame" x="8" y="8" width="358" height="680"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                </subviews>
+                            </scrollView>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="JF8-Um-2c2">
+                                <frame key="frameInset" minX="184" minY="646" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Close"/>
+                                <connections>
+                                    <action selector="closeModal:" destination="2Ug-CU-Olp" eventType="touchUpInside" id="cg4-cy-bc2"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="photoImageView" destination="0xu-1d-f73" id="joK-6P-xf9"/>
+                        <outlet property="scrollView" destination="iMx-Om-0LP" id="kxo-1q-Few"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Hqd-u9-PVw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1748" y="152"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="nSr-CT-1Lv">

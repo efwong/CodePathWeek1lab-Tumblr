@@ -21,6 +21,13 @@ class PhotoDetailsViewController: UIViewController {
         if(self.photoUrl != nil){
             self.photoView.setImageWith(self.photoUrl!)
         }
+        
+        photoView.isUserInteractionEnabled = true
+        //now you need a tap gesture recognizer
+        //note that target and action point to what happens when the action is recognized.
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(onPhotoTap))
+        //Add the recognizer to your view.
+        photoView.addGestureRecognizer(tapRecognizer)
     }
 
     override func didReceiveMemoryWarning() {
@@ -29,14 +36,20 @@ class PhotoDetailsViewController: UIViewController {
     }
     
 
-    /*
+    func onPhotoTap(gestureRecognizer: UITapGestureRecognizer){
+        performSegue(withIdentifier: "photoDetailsToFullScreen", sender: gestureRecognizer)
+    }
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "photoDetailsToFullScreen"{
+            if let destinationVC = segue.destination as? FullScreenPhotoViewController{
+                destinationVC.photoImageURL = self.photoUrl
+            }
+        }
     }
-    */
+ 
 
 }
