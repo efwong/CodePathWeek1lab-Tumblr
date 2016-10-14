@@ -1,9 +1,8 @@
 # Week 1 Lab:
 
-Lab 1 Tumblr Demo app 
-by Edwin Wong
+* Lab 1 Tumblr Demo app by Edwin Wong
 
-
+* gif: http://i.imgur.com/NRTxQfn.gif
 
 ## Completed Milestones:
 * [+] Milestone 1: Setup
