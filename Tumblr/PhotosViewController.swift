@@ -18,6 +18,14 @@ class PhotosViewController: UIViewController, UITableViewDelegate, UITableViewDa
     private var currentRowCount:Int = 3
     private var loadingView: UIActivityIndicatorView? = nil
     override func viewDidLoad() {
+        var testSet:Set<String>=[]
+        testSet.insert("hello")
+        testSet.insert("hello")
+        testSet.insert("gada")
+        
+        for obj in testSet{
+            print(obj)
+        }
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         // initial load of table
